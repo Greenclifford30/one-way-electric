@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Lightbulb, Phone, Wrench, Shield, Clock, Zap } from "lucide-react";
+import Image from 'next/image'
 
 export default function Home() {
   const services = [
@@ -112,7 +113,7 @@ export default function Home() {
               </div>
             </div>
             <div className="relative">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2069&q=80"
                 alt="Electrician at work"
                 className="rounded-lg shadow-xl"

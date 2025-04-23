@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Lightbulb, Phone, Wrench, Shield, Clock, Zap } from "lucide-react";
-import { useState } from "react";
 
 export default function Home() {
   const services = [

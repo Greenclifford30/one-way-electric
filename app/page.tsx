@@ -6,8 +6,6 @@ import { Lightbulb, Phone, Wrench, Shield, Clock, Zap } from "lucide-react";
 import { useState } from "react";
 
 export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const services = [
     {
       icon: <Lightbulb className="h-8 w-8 text-chart-1" />,

@@ -5,6 +5,33 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Lightbulb, Phone, Wrench, Shield, Clock, Zap } from "lucide-react";
 import Image from 'next/image'
 
+const scheduleService = async () => {
+  try {
+    const response = await fetch('/api/schedule-service', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        // You can add any payload data you want to send to your backend here
+        requestedAt: new Date().toISOString(),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to schedule service');
+    }
+
+    const data = await response.json();
+    console.log('Service scheduled successfully:', data);
+    // Optionally: Show a success message or redirect
+  } catch (error) {
+    console.error('Error scheduling service:', error);
+    // Optionally: Show an error message
+  }
+};
+
+
 export default function Home() {
   const services = [
     {
@@ -65,7 +92,7 @@ export default function Home() {
                 Professional electrical services for residential and commercial needs. Available 24/7 for emergencies.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
-                <Button size="lg">Schedule Service</Button>
+                <Button size="lg" onClick={scheduleService}>Schedule Service</Button>
                 <Button variant="outline" size="lg">Learn More</Button>
               </div>
             </div>

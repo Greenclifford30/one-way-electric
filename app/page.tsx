@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { NavBar } from "@/components/ui/navbar";
 import { Lightbulb, Phone, Wrench, Shield, Clock, Zap } from "lucide-react";
-import Image from 'next/image'
 import ServiceRequestModal from "@/components/ui/service_request_modal";
 
 const scheduleService = async () => {
@@ -78,20 +77,6 @@ export default function Home() {
         />
         <div className="relative z-10 px-6 lg:px-8">
           <NavBar></NavBar>
-          {/* <nav className="flex items-center justify-between py-6">
-            <div className="flex items-center">
-              <Zap className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-2xl font-bold text-primary">One Way Electric</span>
-            </div>
-            <div className="hidden md:flex space-x-8">
-              <a href="#services" className="text-primary hover:text-primary/80">Services</a>
-              <a href="#about" className="text-primary hover:text-primary/80">About</a>
-              <a href="#contact" className="text-primary hover:text-primary/80">Contact</a>
-            </div>
-            <Button className="hidden md:block">
-              <Phone className="mr-2 h-4 w-4" /> (555) 123-4567
-            </Button>
-          </nav> */}
 
           <div className="mx-auto max-w-3xl py-32 sm:py-48">
             <div className="text-center">

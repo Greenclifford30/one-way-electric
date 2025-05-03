@@ -7,13 +7,31 @@ import { Phone, Mail, CheckCircle } from "lucide-react";
 import { NavBar } from '@/components/ui/navbar';
 
 type ServiceRequest = {
-  id: number;
-  serviceType: string;
-  contactName: string;
-  contactPhone: string;
-  contactEmail: string;
-  status: 'Pending' | 'In Progress';
-};
+    id: string;
+    serviceType: string;
+    contactName: string;
+    contactPhone: string;
+    contactEmail: string;
+    status: 'Pending' | 'In Progress' | 'Scheduled';
+    description: string;
+    requestedAt: string;
+  };
+  
+
+type ApiServiceRequest = {
+    customerPhone: string;
+    customerName: string;
+    requestedAt: string;
+    status: string;
+    assignedTechnician: string;
+    serviceId: string;
+    SK: string;
+    customerEmail: string;
+    description: string;
+    PK: string;
+    serviceType: string;
+  };
+  
 
 export default function AdminPage() {
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
@@ -22,37 +40,37 @@ export default function AdminPage() {
 
   useEffect(() => {
     const fetchRequests = async () => {
-      try {
-        const response = await fetch('/api/get-service-requests');
-        const data = await response.json();
-  
-        const loadedRequests = Array.isArray(data.requests) ? data.requests : [];
-        console.log('Loaded requests:', loadedRequests);
-        
-        const mappedRequests = loadedRequests.map((item: any, index: number) => ({
-          id: item.serviceId || index,
-          serviceType: item.serviceType || 'Unknown Service',
-          contactName: item.customerName || 'Unknown Name',
-          contactPhone: item.customerPhone || 'Unknown Phone',
-          contactEmail: item.customerEmail || 'Unknown Email',
-          status: item.status || 'Pending',
-          description: item.description || '',
-          requestedAt: item.requestedAt || '',
-        }));
-        setRequests(mappedRequests);
-        
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+        try {
+          const response = await fetch('/api/get-service-requests');
+          const data: { success: boolean; requests: ApiServiceRequest[] } = await response.json();
+      
+          const loadedRequests = Array.isArray(data.requests) ? data.requests : [];
+          console.log('Loaded requests:', loadedRequests);
+      
+          const mappedRequests: ServiceRequest[] = loadedRequests.map((item, index) => ({
+            id: item.serviceId || String(index),
+            serviceType: item.serviceType || 'Unknown Service',
+            contactName: item.customerName || 'Unknown Name',
+            contactPhone: item.customerPhone || 'Unknown Phone',
+            contactEmail: item.customerEmail || 'Unknown Email',
+            status: (item.status as ServiceRequest['status']) || 'Pending',
+            description: item.description || '',
+            requestedAt: item.requestedAt || '',
+          }));
+      
+          setRequests(mappedRequests);
+        } catch (err: any) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };      
   
     fetchRequests();
   }, []);
   
 
-  const handleApprove = (requestId: number) => {
+  const handleApprove = (requestId: string) => {
     setRequests((prev) =>
       prev.map((req) =>
         req.id === requestId ? { ...req, status: 'In Progress' } : req

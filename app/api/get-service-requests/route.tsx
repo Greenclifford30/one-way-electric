@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 /**
  * GET /api/get-service-requests
  * Proxies the request to your AWS API Gateway endpoint
  * using an x-api-key stored in environment variables.
  */
-export async function GET(_request: NextRequest) {
+export async function GET() {
   const gatewayUrl = process.env.API_HOST;
   const apiKey = process.env.API_KEY;
 

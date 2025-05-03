@@ -6,32 +6,6 @@ import { NavBar } from "@/components/ui/navbar";
 import { Lightbulb, Phone, Wrench, Shield, Clock, Zap } from "lucide-react";
 import ServiceRequestModal from "@/components/ui/service_request_modal";
 
-const scheduleService = async () => {
-  try {
-    const response = await fetch('/api/schedule-service', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        // You can add any payload data you want to send to your backend here
-        requestedAt: new Date().toISOString(),
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to schedule service');
-    }
-
-    const data = await response.json();
-    console.log('Service scheduled successfully:', data);
-    // Optionally: Show a success message or redirect
-  } catch (error) {
-    console.error('Error scheduling service:', error);
-    // Optionally: Show an error message
-  }
-};
-
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);

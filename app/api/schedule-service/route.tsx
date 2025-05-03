@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const requestData = await request.json();
     console.log(requestData)
     // Forward the data to your API Gateway endpoint
-    const gatewayResponse = await fetch(gatewayUrl+"/schedule-service", {
+    const gatewayResponse = await fetch(gatewayUrl+"/service", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

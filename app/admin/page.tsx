@@ -15,31 +15,42 @@ type ServiceRequest = {
   status: 'Pending' | 'In Progress';
 };
 
-const mockRequests: ServiceRequest[] = [
-  {
-    id: 1,
-    serviceType: "Residential Electrical",
-    contactName: "John Doe",
-    contactPhone: "555-123-4567",
-    contactEmail: "john.doe@example.com",
-    status: "Pending"
-  },
-  {
-    id: 2,
-    serviceType: "Commercial Services",
-    contactName: "Jane Smith",
-    contactPhone: "555-987-6543",
-    contactEmail: "jane.smith@example.com",
-    status: "Pending"
-  }
-];
-
 export default function AdminPage() {
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setRequests(mockRequests);
+    const fetchRequests = async () => {
+      try {
+        const response = await fetch('/api/get-service-requests');
+        const data = await response.json();
+  
+        const loadedRequests = Array.isArray(data.requests) ? data.requests : [];
+        console.log('Loaded requests:', loadedRequests);
+        
+        const mappedRequests = loadedRequests.map((item: any, index: number) => ({
+          id: item.serviceId || index,
+          serviceType: item.serviceType || 'Unknown Service',
+          contactName: item.customerName || 'Unknown Name',
+          contactPhone: item.customerPhone || 'Unknown Phone',
+          contactEmail: item.customerEmail || 'Unknown Email',
+          status: item.status || 'Pending',
+          description: item.description || '',
+          requestedAt: item.requestedAt || '',
+        }));
+        setRequests(mappedRequests);
+        
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchRequests();
   }, []);
+  
 
   const handleApprove = (requestId: number) => {
     setRequests((prev) =>
@@ -49,9 +60,25 @@ export default function AdminPage() {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg text-muted-foreground">Loading service requests...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg text-red-600">Error: {error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted p-8">
-      <NavBar></NavBar>
+      <NavBar />
       <h1 className="text-4xl font-extrabold mb-10 text-center text-primary">Admin Service Dashboard</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {requests.map((req) => (

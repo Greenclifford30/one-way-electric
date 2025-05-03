@@ -5,21 +5,29 @@ type ServiceRequestModalProps = {
   isOpen: boolean;
   onClose: () => void;
   formData: {
-    name: string;
-    email: string;
-    phone: string;
-    serviceRequest: string;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    serviceType: string;
+    description: string;
   };
   setFormData: Dispatch<SetStateAction<{
-    name: string;
-    email: string;
-    phone: string;
-    serviceRequest: string;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    serviceType: string;
+    description: string;
   }>>;
   theme?: "light" | "dark";
 };
 
-export default function ServiceRequestModal({ isOpen, onClose, formData, setFormData, theme = "light" }: ServiceRequestModalProps) {
+export default function ServiceRequestModal({
+  isOpen,
+  onClose,
+  formData,
+  setFormData,
+  theme = "light"
+}: ServiceRequestModalProps) {
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -57,35 +65,44 @@ export default function ServiceRequestModal({ isOpen, onClose, formData, setForm
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            name="name"
+            name="customerName"
             placeholder="Your Name"
-            value={formData.name}
+            value={formData.customerName}
             onChange={handleInputChange}
             className="w-full p-2 rounded bg-inherit border focus:outline-none focus:ring focus:border-primary"
             required
           />
           <input
             type="email"
-            name="email"
+            name="customerEmail"
             placeholder="Your Email"
-            value={formData.email}
+            value={formData.customerEmail}
             onChange={handleInputChange}
             className="w-full p-2 rounded bg-inherit border focus:outline-none focus:ring focus:border-primary"
             required
           />
           <input
             type="tel"
-            name="phone"
+            name="customerPhone"
             placeholder="Your Phone"
-            value={formData.phone}
+            value={formData.customerPhone}
+            onChange={handleInputChange}
+            className="w-full p-2 rounded bg-inherit border focus:outline-none focus:ring focus:border-primary"
+            required
+          />
+          <input
+            type="text"
+            name="serviceType"
+            placeholder="Service Type (e.g., Residential, Commercial)"
+            value={formData.serviceType}
             onChange={handleInputChange}
             className="w-full p-2 rounded bg-inherit border focus:outline-none focus:ring focus:border-primary"
             required
           />
           <textarea
-            name="serviceRequest"
+            name="description"
             placeholder="Describe your service request"
-            value={formData.serviceRequest}
+            value={formData.description}
             onChange={handleInputChange}
             className="w-full p-2 rounded bg-inherit border focus:outline-none focus:ring focus:border-primary"
             required

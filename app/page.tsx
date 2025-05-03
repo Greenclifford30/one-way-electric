@@ -10,10 +10,11 @@ import ServiceRequestModal from "@/components/ui/service_request_modal";
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    serviceRequest: ''
+    customerName: '',
+    customerEmail: '',
+    customerPhone: '',
+    serviceType: '',
+    description: ''
   });
   const services = [
     {

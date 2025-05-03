@@ -1,9 +1,11 @@
 "use client";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { NavBar } from "@/components/ui/navbar";
 import { Lightbulb, Phone, Wrench, Shield, Clock, Zap } from "lucide-react";
 import Image from 'next/image'
+import ServiceRequestModal from "@/components/ui/service_request_modal";
 
 const scheduleService = async () => {
   try {
@@ -33,6 +35,13 @@ const scheduleService = async () => {
 
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    serviceRequest: ''
+  });
   const services = [
     {
       icon: <Lightbulb className="h-8 w-8 text-chart-1" />,
@@ -68,7 +77,8 @@ export default function Home() {
           }}
         />
         <div className="relative z-10 px-6 lg:px-8">
-          <nav className="flex items-center justify-between py-6">
+          <NavBar></NavBar>
+          {/* <nav className="flex items-center justify-between py-6">
             <div className="flex items-center">
               <Zap className="h-8 w-8 text-primary" />
               <span className="ml-2 text-2xl font-bold text-primary">One Way Electric</span>
@@ -81,7 +91,7 @@ export default function Home() {
             <Button className="hidden md:block">
               <Phone className="mr-2 h-4 w-4" /> (555) 123-4567
             </Button>
-          </nav>
+          </nav> */}
 
           <div className="mx-auto max-w-3xl py-32 sm:py-48">
             <div className="text-center">
@@ -92,14 +102,20 @@ export default function Home() {
                 Professional electrical services for residential and commercial needs. Available 24/7 for emergencies.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
-                <Button size="lg" onClick={scheduleService}>Schedule Service</Button>
+                <Button size="lg" onClick={() => setIsModalOpen(true)}>Schedule Service</Button>
                 <Button variant="outline" size="lg">Learn More</Button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
+      <ServiceRequestModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        formData={formData}
+        setFormData={setFormData}
+        theme="dark"
+      />
       {/* Services Section */}
       <div id="services" className="py-24 bg-muted">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -140,11 +156,13 @@ export default function Home() {
               </div>
             </div>
             <div className="relative">
-              <Image
+              {/* <Image
                 src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2069&q=80"
                 alt="Electrician at work"
                 className="rounded-lg shadow-xl"
-              />
+                width={50}
+                height={40}
+              /> */}
             </div>
           </div>
         </div>

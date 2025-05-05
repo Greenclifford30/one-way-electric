@@ -16,9 +16,13 @@ export function NavBar() {
           className="object-contain"
         />
         <span className="ml-2 text-2xl font-bold text-primary">
-          One Way Electric
+            <Link
+                  href="/"
+                  className="hover:text-primary/80"
+                >
+                One Way Electric
+              </Link>
         </span>
-
       </div>
       <div className="hidden md:flex space-x-8">
               <a href="#services" className="text-primary hover:text-primary/80">Services</a>
@@ -31,9 +35,9 @@ export function NavBar() {
                   Admin
               </Link>
             </div>
-            <Button className="hidden md:block">
-              <Phone className="mr-2 h-4 w-4" /> (555) 123-4567
-            </Button>
+            <a className="hidden md:block" href='tel:(773) 710-9794'>
+              <Phone className="mr-2 h-4 w-4" /> (773) 710-9794
+            </a>
     </nav>
   )
 }

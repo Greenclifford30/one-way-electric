@@ -144,7 +144,7 @@ export default function Home() {
                 <div className="flex flex-col items-center text-center">
                   <Phone className="h-8 w-8 text-chart-1" />
                   <h3 className="mt-4 text-lg font-semibold">Phone</h3>
-                  <p className="mt-2">(555) 123-4567</p>
+                  <p className="mt-2">(773) 710-9794</p>
                 </div>
               </CardContent>
             </Card>

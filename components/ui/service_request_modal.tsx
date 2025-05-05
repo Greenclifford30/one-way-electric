@@ -28,7 +28,18 @@ export default function ServiceRequestModal({
   setFormData,
   theme = "light"
 }: ServiceRequestModalProps) {
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const services = [
+    "Residential Electrical",
+    "Commercial Services",
+    "Emergency Services",
+    "Maintenance",
+    "Lighting Installation",
+    "Panel Upgrades",
+    "Generator Installation",
+    "Electrical Inspections"
+  ];
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -90,15 +101,20 @@ export default function ServiceRequestModal({
             className="w-full p-2 rounded bg-inherit border focus:outline-none focus:ring focus:border-primary"
             required
           />
-          <input
-            type="text"
+          <select
             name="serviceType"
-            placeholder="Service Type (e.g., Residential, Commercial)"
             value={formData.serviceType}
             onChange={handleInputChange}
-            className="w-full p-2 rounded bg-inherit border focus:outline-none focus:ring focus:border-primary"
+            className={`w-full p-2 rounded border focus:outline-none focus:ring focus:border-primary 
+              ${theme === "dark" ? "bg-background text-foreground border-gray-700" : "bg-white text-black border-gray-300"}`}
             required
-          />
+          >
+            <option value="" disabled>Select Service Type</option>
+            {services.map((service, index) => (
+              <option key={index} value={service}>{service}</option>
+            ))}
+          </select>
+
           <textarea
             name="description"
             placeholder="Describe your service request"

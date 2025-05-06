@@ -23,6 +23,7 @@ export default function AdminLoginPage() {
       });
 
       if (response.ok) {
+        console.log("Redirect to admin")
         router.push('/admin');
       } else {
         setError('Invalid credentials');

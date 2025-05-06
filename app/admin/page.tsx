@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Phone, Mail, CheckCircle, XCircle } from "lucide-react";
+import { Phone, Mail, CheckCircle, XCircle, DollarSign } from "lucide-react";
 import { NavBar } from '@/components/ui/navbar';
 
 type ServiceRequest = {
@@ -98,6 +98,15 @@ export default function AdminPage() {
         );
     };
 
+    const handleSendQuote = (requestId: string) => {
+        const request = requests.find((r) => r.id === requestId);
+        if (request) {
+            const subject = encodeURIComponent(`Quote for ${request.serviceType}`);
+            const body = encodeURIComponent(`Hello ${request.contactName},%0D%0A%0D%0AHere is the quote for your requested service: ${request.serviceType}. Please let us know if you would like to proceed.%0D%0A%0D%0AThank you,%0D%0AOne Way Electric`);
+            window.location.href = `mailto:${request.contactEmail}?subject=${subject}&body=${body}`;
+        }
+    };
+
     const filteredRequests = filter === 'All' ? requests : requests.filter((req) => req.serviceType === filter);
 
     const getBorderClass = (serviceType: string) => {
@@ -150,7 +159,7 @@ export default function AdminPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredRequests.map((req) => (
-                    <Card key={req.id} className={`bg-card shadow-xl rounded-2xl border-2 ${getBorderClass(req.serviceType)} hover:shadow-2xl transition-shadow`}>
+                    <Card key={req.id} className={`bg-card rounded-2xl border-2 ${getBorderClass(req.serviceType)} shadow-lg hover:shadow-2xl hover:scale-105 transform transition-all duration-300`}>
                         <CardContent className="p-6 flex flex-col gap-4">
                             <div className="text-center">
                                 <h2 className="text-xl font-semibold text-primary mb-1">{req.serviceType}</h2>
@@ -172,7 +181,7 @@ export default function AdminPage() {
                                 </span>
                             </div>
 
-                            <div className="mt-4 flex gap-2">
+                            <div className="mt-4 flex flex-col gap-2">
                                 {req.status !== 'In Progress' && req.status !== 'Denied' && (
                                     <Button onClick={() => handleApprove(req.id)} className="w-full bg-green-600 hover:bg-green-700">
                                         <CheckCircle className="h-4 w-4 mr-2" /> Approve
@@ -183,6 +192,9 @@ export default function AdminPage() {
                                         <XCircle className="h-4 w-4 mr-2" /> Deny
                                     </Button>
                                 )}
+                                <Button onClick={() => handleSendQuote(req.id)} className="w-full bg-blue-600 hover:bg-blue-700">
+                                    <DollarSign className="h-4 w-4 mr-2" /> Send Quote
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>

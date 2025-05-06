@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+
 /**
  * POST /api/schedule-service
  * Proxies the incoming request body to your AWS API Gateway endpoint

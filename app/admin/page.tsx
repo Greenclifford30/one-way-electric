@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Phone, Mail, CheckCircle } from "lucide-react";
+import { Phone, Mail, CheckCircle, XCircle } from "lucide-react";
 import { NavBar } from '@/components/ui/navbar';
 
 type ServiceRequest = {
@@ -12,11 +12,10 @@ type ServiceRequest = {
     contactName: string;
     contactPhone: string;
     contactEmail: string;
-    status: 'Pending' | 'In Progress' | 'Scheduled';
+    status: 'Pending' | 'In Progress' | 'Scheduled' | 'Denied';
     description: string;
     requestedAt: string;
 };
-
 
 type ApiServiceRequest = {
     customerPhone: string;
@@ -32,11 +31,22 @@ type ApiServiceRequest = {
     serviceType: string;
 };
 
-
 export default function AdminPage() {
     const [requests, setRequests] = useState<ServiceRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [filter, setFilter] = useState<string>('All');
+
+    const serviceTypes = [
+        "Residential Electrical",
+        "Commercial Services",
+        "Emergency Services",
+        "Maintenance",
+        "Lighting Installation",
+        "Panel Upgrades",
+        "Generator Installation",
+        "Electrical Inspections"
+    ];
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -45,7 +55,6 @@ export default function AdminPage() {
                 const data: { success: boolean; requests: ApiServiceRequest[] } = await response.json();
 
                 const loadedRequests = Array.isArray(data.requests) ? data.requests : [];
-                console.log('Loaded requests:', loadedRequests);
 
                 const mappedRequests: ServiceRequest[] = loadedRequests.map((item, index) => ({
                     id: item.serviceId || String(index),
@@ -73,13 +82,29 @@ export default function AdminPage() {
         fetchRequests();
     }, []);
 
-
     const handleApprove = (requestId: string) => {
         setRequests((prev) =>
             prev.map((req) =>
                 req.id === requestId ? { ...req, status: 'In Progress' } : req
             )
         );
+    };
+
+    const handleDeny = (requestId: string) => {
+        setRequests((prev) =>
+            prev.map((req) =>
+                req.id === requestId ? { ...req, status: 'Denied' } : req
+            )
+        );
+    };
+
+    const filteredRequests = filter === 'All' ? requests : requests.filter((req) => req.serviceType === filter);
+
+    const getBorderClass = (serviceType: string) => {
+        if (serviceType.toLowerCase().includes('emergency')) {
+            return 'border-red-500';
+        }
+        return 'border-primary';
     };
 
     if (loading) {
@@ -101,14 +126,35 @@ export default function AdminPage() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-background to-muted p-8">
             <NavBar />
-            <h1 className="text-4xl font-extrabold mb-10 text-center text-primary">Admin Service Dashboard</h1>
+            <h1 className="text-4xl font-extrabold mb-6 text-center text-primary">Admin Service Dashboard</h1>
+
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+                <Button
+                    onClick={() => setFilter('All')}
+                    variant={filter === 'All' ? 'default' : 'outline'}
+                    className={`text-sm px-4 py-2 rounded-full ${filter === 'All' ? 'bg-primary text-white' : 'bg-muted text-primary border-2 border-primary hover:bg-primary hover:text-white'}`}
+                >
+                    All
+                </Button>
+                {serviceTypes.map((type) => (
+                    <Button
+                        key={type}
+                        onClick={() => setFilter(type)}
+                        variant={filter === type ? 'default' : 'outline'}
+                        className={`text-sm px-4 py-2 rounded-full ${filter === type ? 'bg-primary text-white' : 'bg-muted text-primary border-2 border-primary hover:bg-primary hover:text-white'}`}
+                    >
+                        {type}
+                    </Button>
+                ))}
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {requests.map((req) => (
-                    <Card key={req.id} className="bg-card shadow-xl rounded-2xl hover:shadow-2xl transition-shadow">
+                {filteredRequests.map((req) => (
+                    <Card key={req.id} className={`bg-card shadow-xl rounded-2xl border-2 ${getBorderClass(req.serviceType)} hover:shadow-2xl transition-shadow`}>
                         <CardContent className="p-6 flex flex-col gap-4">
                             <div className="text-center">
-                                <h2 className="text-xl font-semibold text-primary mb-2">{req.serviceType}</h2>
-                                <p className="text-muted-foreground">Requested by {req.contactName}</p>
+                                <h2 className="text-xl font-semibold text-primary mb-1">{req.serviceType}</h2>
+                                <p className="text-muted-foreground text-sm">Requested by {req.contactName}</p>
                             </div>
 
                             <div className="flex justify-center gap-4 text-sm">
@@ -121,16 +167,23 @@ export default function AdminPage() {
                             </div>
 
                             <div className="text-center mt-2">
-                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${req.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${req.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : req.status === 'In Progress' ? 'bg-green-100 text-green-800' : req.status === 'Denied' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}`}>
                                     {req.status}
                                 </span>
                             </div>
 
-                            {req.status !== 'In Progress' && (
-                                <Button onClick={() => handleApprove(req.id)} className="mt-4 w-full bg-primary hover:bg-primary/90">
-                                    <CheckCircle className="h-4 w-4 mr-2" /> Approve
-                                </Button>
-                            )}
+                            <div className="mt-4 flex gap-2">
+                                {req.status !== 'In Progress' && req.status !== 'Denied' && (
+                                    <Button onClick={() => handleApprove(req.id)} className="w-full bg-green-600 hover:bg-green-700">
+                                        <CheckCircle className="h-4 w-4 mr-2" /> Approve
+                                    </Button>
+                                )}
+                                {req.status !== 'Denied' && req.status !== 'In Progress' && (
+                                    <Button onClick={() => handleDeny(req.id)} variant="destructive" className="w-full">
+                                        <XCircle className="h-4 w-4 mr-2" /> Deny
+                                    </Button>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
                 ))}

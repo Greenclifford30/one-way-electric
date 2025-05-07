@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, XCircle, Mail, User, AlertTriangle, Wrench } from "lucide-react";
+import { CheckCircle, XCircle, Mail, User, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 type RequestCardProps = {

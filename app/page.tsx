@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { NavBar } from "@/components/ui/navbar";
 import { Lightbulb, Phone, Wrench, Shield, Clock, Zap } from "lucide-react";
-import ServiceRequestModal from "@/components/ui/service_request_modal";
+import ServiceRequestModal from "@/components/ui/service-request-modal";
 
 
 export default function Home() {

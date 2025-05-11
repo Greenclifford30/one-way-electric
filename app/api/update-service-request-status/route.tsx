@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function DELETE(req: NextRequest) {
+export async function PATCH(req: Request) {
   const gatewayUrl = process.env.API_HOST;
   const apiKey = process.env.API_KEY;
 
@@ -13,36 +13,29 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    const { serviceId } = await req.json();
+    const body = await req.json();
 
-    if (!serviceId) {
-      return NextResponse.json(
-        { success: false, error: 'Service ID is required' },
-        { status: 400 }
-      );
-    }
-
-    const gatewayResponse = await fetch(`${gatewayUrl}/service/${serviceId}`, {
-      method: 'DELETE',
+    const gatewayResponse = await fetch(`${gatewayUrl}/update-status`, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
       },
+      body: JSON.stringify(body),
     });
 
     if (!gatewayResponse.ok) {
       const errorData = await gatewayResponse.json();
       return NextResponse.json(
-        { success: false, error: errorData.error || 'Failed to delete service' },
+        { success: false, error: errorData?.error || 'Upstream error' },
         { status: gatewayResponse.status }
       );
     }
 
-    const data = await gatewayResponse.json();
-
-    return NextResponse.json({ success: true, data });
-  } catch (error) {
-    console.error('Error deleting service request:', error);
+    const result = await gatewayResponse.json();
+    return NextResponse.json({ success: true, result });
+  } catch (err) {
+    console.error('Error forwarding update to API Gateway:', err);
     return NextResponse.json(
       { success: false, error: 'Internal Server Error' },
       { status: 500 }

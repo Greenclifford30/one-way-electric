@@ -81,9 +81,39 @@ export default function AdminPage() {
         fetchRequests();
     }, []);
 
-    const updateStatus = (requestId: string, status: ServiceRequest['status']) => {
-        setRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, status } : req));
+    const updateStatus = async (requestId: string, status: ServiceRequest['status'], requestedAt: string) => {
+        try {
+            const res = await fetch('/api/update-service-request-status', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(
+                    { 
+                        serviceId: requestId, 
+                        requestedAt, 
+                        status 
+                    }),
+            });
+    
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err?.error || 'Failed to update status');
+            }
+    
+            // Update UI only if successful
+            setRequests((prev) =>
+                prev.map((req) =>
+                    req.id === requestId ? { ...req, status } : req
+                )
+            );
+        } catch (error) {
+            console.error('Update failed:', error);
+            // Optionally: show a toast or alert to admin
+            alert(`Failed to update status: ${(error as Error).message}`);
+        }
     };
+    
 
     const sendQuote = (requestId: string) => {
         const request = requests.find((r) => r.id === requestId);
@@ -162,7 +192,7 @@ export default function AdminPage() {
                             requestedAt={req.requestedAt}
                             isEmergency={req.isEmergency}
                             technician={req.technician}
-                            onUpdateStatus={updateStatus}
+                            onUpdateStatus={(status) => updateStatus(req.id, status as ServiceRequest["status"], req.requestedAt)}
                             onSendQuote={sendQuote}
                         />
                     </div>

@@ -1,6 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function DELETE(req: NextRequest) {
+/**
+ * GET /api/get-service-requests
+ * Proxies the request to your AWS API Gateway endpoint
+ * using an x-api-key stored in environment variables.
+ */
+export async function GET() {
   const gatewayUrl = process.env.API_HOST;
   const apiKey = process.env.API_KEY;
 
@@ -13,17 +18,8 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    const { serviceId } = await req.json();
-
-    if (!serviceId) {
-      return NextResponse.json(
-        { success: false, error: 'Service ID is required' },
-        { status: 400 }
-      );
-    }
-
-    const gatewayResponse = await fetch(`${gatewayUrl}/service/${serviceId}`, {
-      method: 'DELETE',
+    const gatewayResponse = await fetch(`${gatewayUrl}/service`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
@@ -31,18 +27,34 @@ export async function DELETE(req: NextRequest) {
     });
 
     if (!gatewayResponse.ok) {
-      const errorData = await gatewayResponse.json();
+      const errorText = await gatewayResponse.text();
+      console.error('Gateway Error:', gatewayResponse.status, errorText);
       return NextResponse.json(
-        { success: false, error: errorData.error || 'Failed to delete service' },
+        { success: false, error: errorText || 'Error from API Gateway' },
         { status: gatewayResponse.status }
       );
     }
 
-    const data = await gatewayResponse.json();
+    let responseBody;
+    try {
+      responseBody = await gatewayResponse.json();
+    } catch {
+      console.warn('Non-JSON response received from API Gateway');
+      responseBody = [];
+    }
 
-    return NextResponse.json({ success: true, data });
+    // Ensure we always return an array under `requests`
+    const requests = Array.isArray(responseBody)
+      ? responseBody
+      : Array.isArray(responseBody.data)
+      ? responseBody.data
+      : Array.isArray(responseBody.requests)
+      ? responseBody.requests
+      : [];
+
+    return NextResponse.json({ success: true, requests }, { status: 200 });
   } catch (error) {
-    console.error('Error deleting service request:', error);
+    console.error('Proxy error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal Server Error' },
       { status: 500 }

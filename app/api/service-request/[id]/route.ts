@@ -1,6 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function PATCH(req: Request) {
+export async function PATCH(req: NextRequest, context: { params?: { id?: string } }) {
+  const serviceId = context?.params?.id;
+
+  if (!serviceId) {
+    return NextResponse.json(
+      { success: false, error: "Missing service ID in request URL." },
+      { status: 400 }
+    );
+  }
+
   const gatewayUrl = process.env.API_HOST;
   const apiKey = process.env.API_KEY;
 
@@ -15,7 +24,7 @@ export async function PATCH(req: Request) {
   try {
     const body = await req.json();
 
-    const gatewayResponse = await fetch(`${gatewayUrl}/update-status`, {
+    const gatewayResponse = await fetch(`${gatewayUrl}/service/${serviceId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

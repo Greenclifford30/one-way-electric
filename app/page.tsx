@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { NavBar } from "@/components/ui/navbar";
+import { NavBar } from "@/components/navbar";
 import { Lightbulb, Phone, Wrench, Shield, Clock, Zap } from "lucide-react";
-import ServiceRequestModal from "@/components/ui/service-request-modal";
+import ServiceRequestModal from "@/components/service-request-modal";
 
 
 export default function Home() {
@@ -41,6 +41,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
+                <NavBar/>
+
       {/* Hero Section */}
       <div className="relative">
         <div 
@@ -51,7 +53,6 @@ export default function Home() {
           }}
         />
         <div className="relative z-10 px-6 lg:px-8">
-          <NavBar></NavBar>
 
           <div className="mx-auto max-w-3xl py-32 sm:py-48">
             <div className="text-center">

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, XCircle, Mail, User, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -136,34 +136,42 @@ export default function RequestCard({
   
 
   return (
-    <Card
-      className={`transition transform hover:scale-[1.02] hover:shadow-lg ${getCardBgColor(status)} ${isEmergency ? "border-red-500" : "border-border"
-        } rounded-xl`}
-    >
-      <CardContent className="p-4">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-semibold text-primary">{customerName}</h3>
-          <Badge variant={getBadgeVariant(status)}>{status}</Badge>
+  <Card
+    className={`transition-transform hover:scale-[1.01] hover:shadow-xl rounded-xl p-1 ${
+      isEmergency ? 'border-red-500 border-2' : 'border-border'
+    }`}
+  >
+    <CardHeader className="pb-2">
+      <div className="flex justify-between items-center">
+        <div className="text-xl font-bold text-primary">{customerName}</div>
+        <Badge variant={getBadgeVariant(status)} className="text-sm px-2 py-1">
+          {status}
+        </Badge>
+      </div>
+      {isEmergency && (
+        <div className="flex items-center mt-1 text-red-600 text-sm font-semibold">
+          <AlertTriangle className="mr-2 h-4 w-4" />
+          Emergency Request
+        </div>
+      )}
+    </CardHeader>
+
+    <CardContent className="pt-2 space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
+        <div>
+          <p className="text-sm text-muted-foreground">
+            <strong>Service:</strong> {serviceType}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            <strong>Requested At:</strong>{' '}
+            {new Date(requestedAt).toLocaleString()}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            <strong>Description:</strong> {description}
+          </p>
         </div>
 
-        {isEmergency && (
-          <div className="flex items-center text-red-400 text-sm mb-2">
-            <AlertTriangle className="mr-1 w-4 h-4" />
-            Emergency Request
-          </div>
-        )}
-
-        <p className="text-sm text-muted-foreground mb-1">
-          <strong>Service:</strong> {serviceType}
-        </p>
-        <p className="text-sm text-muted-foreground mb-1">
-          <strong>Requested At:</strong> {new Date(requestedAt).toLocaleString()}
-        </p>
-        <p className="text-sm text-muted-foreground mb-3">
-          <strong>Description:</strong> {description}
-        </p>
-
-        <div className="text-sm text-muted-foreground mb-3 space-y-1">
+        <div className="text-sm text-muted-foreground space-y-1">
           <p>
             <Mail className="inline w-4 h-4 mr-1" />
             {customerEmail}
@@ -173,42 +181,52 @@ export default function RequestCard({
             {customerPhone}
           </p>
         </div>
+      </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Select value={selectedStatus} onValueChange={handleStatusChange}>
-            <SelectTrigger className="w-[200px]" />
-            <SelectContent>
-              {statusOptions.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-4">
+        <Select value={selectedStatus} onValueChange={handleStatusChange}>
+          <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectValue placeholder="Select a status" />
+          </SelectTrigger>
+          <SelectContent>
+            {statusOptions.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onSendQuote(id)}
+          className="w-full sm:w-auto"
+        >
+          Send Quote
+        </Button>
+      </div>
+    </CardContent>
 
-          <Button size="sm" variant="outline" onClick={() => onSendQuote(id)}>
-            Send Quote
-          </Button>
-        </div>
-      </CardContent>
-
+    {/* Confirm dialog for irreversible status updates */}
+    {confirming && (
       <Dialog open={!!confirming} onOpenChange={() => setConfirming(null)}>
         <DialogContent>
-          <div>
-            <DialogHeader>
-              <DialogTitle>Confirm Status Change</DialogTitle>
-            </DialogHeader>
-            <p>Are you sure you want to mark this request as <strong>{confirming}</strong>?</p>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setConfirming(null)}>Cancel</Button>
-              <Button variant="destructive" onClick={confirmStatusUpdate}>Confirm</Button>
-            </DialogFooter>
-          </div>
+          <DialogHeader>
+            <DialogTitle>
+              Confirm status change to "{confirming}"?
+            </DialogTitle>
+          </DialogHeader>
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setConfirming(null)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmStatusUpdate}>Confirm</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
+    )}
+  </Card>
+);
 
-
-    </Card>
-  );
 }

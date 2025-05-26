@@ -1,173 +1,161 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { NavBar } from '@/components/ui/navbar';
-import RequestCard from '@/components/ui/request-card';
-import { Lightbulb, Wrench, Shield, Clock, Zap, AlertTriangle } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { NavBar } from "@/components/navbar";
+import RequestCard from "@/components/request-card";
+import { Lightbulb, Wrench, Shield, Clock, Zap, AlertTriangle } from "lucide-react";
+
+type Status = 'Pending' | 'In Progress' | 'Scheduled' | 'Denied' | 'Completed';
 
 type ServiceRequest = {
-    id: string;
-    serviceType: string;
-    customerName: string;
-    customerPhone: string;
-    customerEmail: string;
-    status: 'Pending' | 'In Progress' | 'Scheduled' | 'Denied' | 'Completed';
-    description: string;
-    requestedAt: string;
-    isEmergency?: boolean;
-    technician?: string;
+  id: string;
+  serviceType: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  status: Status;
+  description: string;
+  requestedAt: string;
+  isEmergency?: boolean;
+  technician?: string;
 };
 
 type ApiServiceRequest = {
-    customerPhone: string;
-    customerName: string;
-    requestedAt: string;
-    status: string;
-    assignedTechnician: string;
-    serviceId: string;
-    SK: string;
-    customerEmail: string;
-    description: string;
-    PK: string;
-    serviceType: string;
+  customerPhone: string;
+  customerName: string;
+  requestedAt: string;
+  status: string;
+  assignedTechnician: string;
+  serviceId: string;
+  SK: string;
+  customerEmail: string;
+  description: string;
+  PK: string;
+  serviceType: string;
 };
 
+const allStatuses: Status[] = ['Pending', 'In Progress', 'Scheduled', 'Completed', 'Denied'];
+
 export default function AdminPage() {
-    const [requests, setRequests] = useState<ServiceRequest[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [filter, setFilter] = useState<string>('All');
+  const [requests, setRequests] = useState<ServiceRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [serviceFilter, setServiceFilter] = useState<string>('All');
+  const [statusFilter, setStatusFilter] = useState<Status | 'All'>('All');
 
-    const serviceTypes = [
-        { name: "Residential Electrical", icon: <Lightbulb className="mr-1 w-4 h-4" /> },
-        { name: "Commercial Services", icon: <Wrench className="mr-1 w-4 h-4" /> },
-        { name: "Emergency Services", icon: <AlertTriangle className="mr-1 w-4 h-4 text-red-500" /> },
-        { name: "Maintenance", icon: <Clock className="mr-1 w-4 h-4" /> },
-        { name: "Lighting Installation", icon: <Zap className="mr-1 w-4 h-4" /> },
-        { name: "Panel Upgrades", icon: <Shield className="mr-1 w-4 h-4" /> },
-        { name: "Generator Installation", icon: <Zap className="mr-1 w-4 h-4" /> },
-        { name: "Electrical Inspections", icon: <Shield className="mr-1 w-4 h-4" /> }
-    ];
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const res = await fetch("/api/get-service-requests");
+        const data: { success: boolean; requests: ApiServiceRequest[] } = await res.json();
 
-    useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const response = await fetch('/api/get-service-requests');
-                const data: { success: boolean; requests: ApiServiceRequest[] } = await response.json();
-                const loadedRequests = Array.isArray(data.requests) ? data.requests : [];
+        const mappedRequests: ServiceRequest[] = data.requests.map((item, index) => ({
+          id: item.serviceId || String(index),
+          serviceType: item.serviceType || "Unknown",
+          customerName: item.customerName,
+          customerPhone: item.customerPhone,
+          customerEmail: item.customerEmail,
+          status: item.status as Status,
+          description: item.description,
+          requestedAt: item.requestedAt,
+          isEmergency: item.serviceType?.toLowerCase().includes("emergency"),
+          technician: item.assignedTechnician || undefined,
+        }));
 
-                const mappedRequests: ServiceRequest[] = loadedRequests.map((item, index) => ({
-                    id: item.serviceId || String(index),
-                    serviceType: item.serviceType || 'Unknown Service',
-                    customerName: item.customerName || 'Unknown Name',
-                    customerPhone: item.customerPhone || 'Unknown Phone',
-                    customerEmail: item.customerEmail || 'Unknown Email',
-                    status: (item.status as ServiceRequest['status']) || 'Pending',
-                    description: item.description || '',
-                    requestedAt: item.requestedAt || '',
-                    isEmergency: item.serviceType?.toLowerCase().includes('emergency') || false,
-                    technician: item.assignedTechnician || undefined,
-                }));
-
-                setRequests(mappedRequests);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'An unknown error occurred');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchRequests();
-    }, []);
-
-    const updateStatus = (requestId: string, status: ServiceRequest['status']) => {
-        setRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, status } : req));
+        setRequests(mappedRequests);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An unknown error occurred");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const sendQuote = (requestId: string) => {
-        const request = requests.find((r) => r.id === requestId);
-        if (request) {
-            const subject = encodeURIComponent(`Quote for ${request.serviceType}`);
-            const body = encodeURIComponent(`Hello ${request.customerName},\n\nHere is the quote for your requested service: ${request.serviceType}. Please let us know if you would like to proceed.\n\nThank you,\nOne Way Electric`);
-            window.location.href = `mailto:${request.customerEmail}?subject=${subject}&body=${body}`;
-        }
-    };
+    fetchRequests();
+  }, []);
 
-    const filteredRequests = filter === 'All' ? requests : requests.filter((req) => req.serviceType === filter);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
-                <p className="mt-4 text-lg text-muted-foreground">Loading service requests...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center">
-                <AlertTriangle className="h-12 w-12 text-red-500" />
-                <p className="mt-4 text-lg text-red-600">Error: {error}</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="min-h-screen bg-gradient-to-b from-background to-muted p-8">
-            <NavBar />
-            <h1 className="text-5xl font-extrabold mb-8 text-center text-primary drop-shadow-lg">
-                Admin Service Dashboard
-            </h1>
-
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
-                <Button onClick={() => setFilter('All')} variant={filter === 'All' ? 'default' : 'outline'}>
-                    All
-                </Button>
-                {serviceTypes.map((type) => (
-                    <Button
-                        key={type.name}
-                        onClick={() => setFilter(type.name)}
-                        variant={filter === type.name ? 'default' : 'outline'}
-                    >
-                        {type.icon}
-                        {type.name}
-                    </Button>
-                ))}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredRequests.map((req) => (
-                    <div
-                        key={req.id}
-                        className={`rounded-2xl shadow-lg p-4 bg-card border ${
-                            req.isEmergency ? 'border-red-500' : 'border-border'
-                        }`}
-                    >
-                        {req.isEmergency && (
-                            <div className="flex items-center text-red-500 mb-2">
-                                <AlertTriangle className="mr-1 w-4 h-4" />
-                                <span className="text-sm font-semibold">Emergency</span>
-                            </div>
-                        )}
-                        <RequestCard
-                            id={req.id}
-                            customerName={req.customerName}
-                            customerPhone={req.customerPhone}
-                            customerEmail={req.customerEmail}
-                            serviceType={req.serviceType}
-                            status={req.status}
-                            description={req.description}
-                            requestedAt={req.requestedAt}
-                            isEmergency={req.isEmergency}
-                            technician={req.technician}
-                            onUpdateStatus={updateStatus}
-                            onSendQuote={sendQuote}
-                        />
-                    </div>
-                ))}
-            </div>
-        </div>
+  const updateStatus = (id: string, status: Status) => {
+    setRequests((prev) =>
+      prev.map((req) => (req.id === id ? { ...req, status } : req))
     );
+  };
+
+  const sendQuote = (id: string) => {
+    const req = requests.find((r) => r.id === id);
+    if (!req) return;
+    const subject = encodeURIComponent(`Quote for ${req.serviceType}`);
+    const body = encodeURIComponent(`Hello ${req.customerName},\n\nHere is the quote for your requested service: ${req.serviceType}.\n\nThanks,\nOne Way Electric`);
+    window.location.href = `mailto:${req.customerEmail}?subject=${subject}&body=${body}`;
+  };
+
+  const filteredRequests = requests.filter((r) =>
+    (serviceFilter === "All" || r.serviceType === serviceFilter) &&
+    (statusFilter === "All" || r.status === statusFilter)
+  );
+
+  if (loading) return (
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+      <p className="mt-4 text-lg text-muted-foreground">Loading service requests...</p>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <AlertTriangle className="h-12 w-12 text-red-500" />
+      <p className="mt-4 text-lg text-red-600">Error: {error}</p>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-background p-6">
+      <NavBar />
+      <h1 className="text-4xl font-bold text-center my-8 text-primary">Admin Service Dashboard</h1>
+
+      {/* Status Tabs */}
+      <Tabs defaultValue="All" className="mb-6">
+        <TabsList className="flex flex-wrap justify-center">
+          <TabsTrigger value="All" onClick={() => setStatusFilter('All')}>All</TabsTrigger>
+          {allStatuses.map((status) => (
+            <TabsTrigger key={status} value={status} onClick={() => setStatusFilter(status)}>
+              {status}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
+      {/* Service Filters */}
+      <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <Button onClick={() => setServiceFilter('All')} variant={serviceFilter === 'All' ? 'default' : 'outline'}>All Services</Button>
+        {[...new Set(requests.map((r) => r.serviceType))].map((type) => (
+          <Button
+            key={type}
+            onClick={() => setServiceFilter(type)}
+            variant={serviceFilter === type ? 'default' : 'outline'}
+          >
+            {type}
+          </Button>
+        ))}
+      </div>
+
+      {/* Requests Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredRequests.length > 0 ? (
+          filteredRequests.map((req) => (
+            <RequestCard
+              key={req.id}
+              {...req}
+              onUpdateStatus={updateStatus}
+              onSendQuote={sendQuote}
+            />
+          ))
+        ) : (
+          <p className="col-span-full text-center text-muted-foreground text-lg mt-12">
+            No requests match the selected filters.
+          </p>
+        )}
+      </div>
+    </div>
+  );
 }

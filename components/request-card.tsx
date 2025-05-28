@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, XCircle, Mail, User, AlertTriangle, Phone, Calendar, Clock } from "lucide-react";
+import { Mail, User, AlertTriangle, Phone, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -109,7 +109,7 @@ export default function RequestCard({
       setSelectedStatus(newTypedStatus);
       onUpdateStatus(id, newTypedStatus);
       toast.success(`Status updated to ${newTypedStatus}`);
-    } catch (err) {
+    } catch {
       toast.error("Failed to update status");
     }
   };
@@ -135,7 +135,7 @@ export default function RequestCard({
       onUpdateStatus(id, confirming);
       toast.success(`Status updated to ${confirming}`);
       setConfirming(null);
-    } catch (err) {
+    } catch {
       toast.error("Failed to update status");
     }
   };
@@ -250,7 +250,7 @@ export default function RequestCard({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                Confirm status change to "{confirming}"?
+                Confirm status change to &quot;{confirming}&quot;?
               </DialogTitle>
             </DialogHeader>
             <p className="text-muted-foreground">

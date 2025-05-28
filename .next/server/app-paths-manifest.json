@@ -1,5 +1,5 @@
 {
-  "/api/get-service-requests/route": "app/api/get-service-requests/route.js",
+  "/admin/page": "app/admin/page.js",
   "/page": "app/page.js",
-  "/admin/page": "app/admin/page.js"
+  "/admin-login/page": "app/admin-login/page.js"
 }

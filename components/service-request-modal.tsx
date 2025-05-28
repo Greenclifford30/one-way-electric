@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { X } from "lucide-react";
 
 type ServiceRequestModalProps = {
   isOpen: boolean;
@@ -26,8 +25,7 @@ export default function ServiceRequestModal({
   isOpen,
   onClose,
   formData,
-  setFormData,
-  theme = "light"
+  setFormData
 }: ServiceRequestModalProps) {
   const services = [
     "Residential Electrical",
@@ -130,7 +128,7 @@ export default function ServiceRequestModal({
           />
           {errors.customerPhone && <p className="text-sm text-destructive">{errors.customerPhone}</p>}
 
-          <Select onValueChange={(val) => handleInputChange({ target: { name: "serviceType", value: val } } as any)} value={formData.serviceType}>
+          <Select onValueChange={(val) => setFormData(prev => ({ ...prev, serviceType: val }))} value={formData.serviceType}>
             <SelectTrigger>
               <SelectValue placeholder="Select Service Type" />
             </SelectTrigger>

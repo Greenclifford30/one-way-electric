@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function PATCH(req: NextRequest, context: { params?: { id?: string } }) {
-  const serviceId = await context?.params?.id;
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id: serviceId } = await context.params;
 
   if (!serviceId) {
     return NextResponse.json(

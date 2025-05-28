@@ -7,20 +7,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
+
 type ServiceRequestModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  formData: {
-    customerName: string;
-    customerEmail: string;
-    customerPhone: string;
-    serviceType: string;
-    description: string;
-  };
-  setFormData: Dispatch<SetStateAction<typeof formData>>;
+  formData: ServiceRequestForm;
+  setFormData: Dispatch<SetStateAction<ServiceRequestForm>>;
   theme?: "light" | "dark";
 };
 
+type ServiceRequestForm = {
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  serviceType: string;
+  description: string;
+};
 export default function ServiceRequestModal({
   isOpen,
   onClose,

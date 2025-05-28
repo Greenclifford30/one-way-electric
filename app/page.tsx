@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { NavBar } from "@/components/navbar";
-import { Lightbulb, Phone, Wrench, Shield, Clock, Zap, MapPin, Mail, Star } from "lucide-react";
+import { Lightbulb, Phone, Wrench, Shield, Clock, Zap, Star } from "lucide-react";
 import ServiceRequestModal from "@/components/service-request-modal";
 import Image from 'next/image';
 
@@ -261,7 +261,7 @@ export default function Home() {
           <div className="text-center bg-primary/5 rounded-2xl p-12">
             <h3 className="text-3xl font-bold mb-4">Ready to Get Started?</h3>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Don't wait for electrical problems to get worse. Contact us today for professional, reliable service.
+              Don&apos;t wait for electrical problems to get worse. Contact us today for professional, reliable service.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" onClick={() => setIsModalOpen(true)}>

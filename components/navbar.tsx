@@ -77,7 +77,11 @@ export function NavBar() {
         {/* Call Button */}
         <Button 
           asChild 
-          className="hidden md:inline-flex bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+          className={`hidden md:inline-flex shadow-lg hover:shadow-xl transition-all duration-300 ${
+            isScrolled 
+              ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
+              : 'bg-white hover:bg-white/90 text-primary border-2 border-white/20 backdrop-blur-sm'
+          }`}
         >
           <a href="tel:(773) 710-9794" aria-label="Call One Way Electric">
             <Phone className="mr-2 h-4 w-4" />
@@ -88,8 +92,16 @@ export function NavBar() {
         {/* Mobile Menu */}
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className={`h-6 w-6 ${isScrolled ? 'text-primary' : 'text-white'}`} />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={`md:hidden ${
+                isScrolled 
+                  ? 'text-primary hover:bg-primary/10' 
+                  : 'text-white hover:bg-white/10 backdrop-blur-sm'
+              }`}
+            >
+              <Menu className="h-6 w-6" />
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-64">

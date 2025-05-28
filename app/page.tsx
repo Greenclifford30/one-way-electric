@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { NavBar } from "@/components/navbar";
 import { Lightbulb, Phone, Wrench, Shield, Clock, Zap, MapPin, Mail, Star } from "lucide-react";
 import ServiceRequestModal from "@/components/service-request-modal";
+import Image from 'next/image';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -86,14 +87,14 @@ export default function Home() {
             <Button 
               size="lg" 
               onClick={() => setIsModalOpen(true)}
-              className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl hover:shadow-3xl"
             >
               Schedule Service
             </Button>
             <Button 
               variant="outline" 
               size="lg"
-              className="border-2 border-white text-white hover:bg-white hover:text-primary px-8 py-4 text-lg font-semibold backdrop-blur-sm bg-white/10 transition-all duration-300"
+              className="border-2 border-white text-white hover:bg-white hover:text-primary backdrop-blur-sm bg-white/10"
             >
               Learn More
             </Button>
@@ -192,8 +193,13 @@ export default function Home() {
               </Button>
             </div>
             <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center">
-                <Zap className="h-32 w-32 text-primary/30" />
+              <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl overflow-hidden">
+                <Image
+                  src="/logo.svg"
+                  alt="One Way Electric Logo"
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
           </div>

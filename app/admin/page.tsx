@@ -150,14 +150,14 @@ export default function AdminPage() {
         variant="ghost" 
         size="icon" 
         onClick={toggleTheme}
-        className="fixed top-4 right-20 z-50 text-foreground hover:bg-accent"
+        className="fixed top-6 right-6 z-50 text-foreground hover:bg-accent/80 shadow-lg bg-background/80 backdrop-blur-sm border border-border/50"
         aria-label="Toggle Theme"
       >
         {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
       </Button>
 
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pt-24">
         {/* Header Section with Dark Mode Styling */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-primary mb-2">
@@ -207,13 +207,22 @@ export default function AdminPage() {
             </div>
 
       {/* Service Filters */}
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
-        <Button onClick={() => setServiceFilter('All')} variant={serviceFilter === 'All' ? 'default' : 'outline'}>All Services</Button>
+      <div className="flex flex-wrap justify-center gap-3 mb-6">
+        <Button 
+          onClick={() => setServiceFilter('All')} 
+          variant={serviceFilter === 'All' ? 'default' : 'outline'}
+          size="sm"
+          className="font-medium"
+        >
+          All Services
+        </Button>
         {[...new Set(requests.map((r) => r.serviceType))].map((type) => (
           <Button
             key={type}
             onClick={() => setServiceFilter(type)}
             variant={serviceFilter === type ? 'default' : 'outline'}
+            size="sm"
+            className="font-medium"
           >
             {type}
           </Button>
